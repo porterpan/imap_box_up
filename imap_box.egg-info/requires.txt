@@ -1,4 +1,0 @@
-protobuf<=3.19.4
-matplotlib
-pyproj
-record_msg<=0.1.1

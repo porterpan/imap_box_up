@@ -212,7 +212,7 @@ class Lane:
 
     ds = s - self.widths[idx].sOffset
     return a + b*ds + c*ds**2 + d*ds**3
-
+# TODO::compute boundary points by referce line
   def generate_boundary(self, left_boundary, start_s):
     self.left_boundary = left_boundary
     for point3d in left_boundary:
@@ -351,6 +351,36 @@ class LaneSection:
         return []
     else:
       return []
+    
+  def get_cross_section_points_(self, direction):
+    if direction == "start":
+      if self.left and self.right:
+        leftmost_lane, rightmost_lane = self.left[0], self.right[-1]
+        return [leftmost_lane.right_boundary[-1::-1], rightmost_lane.right_boundary[0:]]
+      
+      elif self.left:
+        leftmost_lane, rightmost_lane = self.left[0], self.left[-1]
+        return [leftmost_lane.right_boundary[-1::-1], rightmost_lane.left_boundary[-1::-1]]
+      
+      elif self.right:
+        leftmost_lane, rightmost_lane = self.right[0], self.right[-1]
+        return [leftmost_lane.left_boundary[0:], rightmost_lane.right_boundary[0:]]
+      else:
+        return []
+    elif direction == "end":
+      if self.left and self.right:
+        leftmost_lane, rightmost_lane = self.left[0], self.right[-1]
+        return [leftmost_lane.right_boundary[0:], rightmost_lane.right_boundary[-1::-1]]
+      elif self.left:
+        leftmost_lane, rightmost_lane = self.left[0], self.left[-1]
+        return [leftmost_lane.right_boundary[0:], rightmost_lane.left_boundary[0:]]
+      elif self.right:
+        leftmost_lane, rightmost_lane = self.right[0], self.right[-1]
+        return [leftmost_lane.left_boundary[-1::-1], rightmost_lane.right_boundary[-1::-1]]
+      else:
+        return []
+    else:
+      return []
 
   def leftmost_boundary(self):
     for lane in self.left:
@@ -430,6 +460,19 @@ class Lanes:
       return self.lane_sections[0].get_cross_section("start")
     elif relation == "successor":
       return self.lane_sections[-1].get_cross_section("end")
+    else:
+      print("Unknown relation!")
+      return []
+
+  
+      
+  def get_cross_section_points(self, relation):
+    # qian
+    if relation == "predecessor":
+      return self.lane_sections[0].get_cross_section_points_("start")
+    # hou
+    elif relation == "successor":
+      return self.lane_sections[-1].get_cross_section_points_("end")
     else:
       print("Unknown relation!")
       return []

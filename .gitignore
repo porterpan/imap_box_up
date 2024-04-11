@@ -1,0 +1,5 @@
+.vscode/
+build/
+dist/
+.chat
+imap_box_up.egg-info

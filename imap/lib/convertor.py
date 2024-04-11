@@ -33,6 +33,9 @@ from imap.lib.proto_utils import (
 from imap.lib.draw import draw_line, show
 from imap.lib.convex_hull import convex_hull, aabb_box
 from imap.lib.proj_helper import latlon2utm
+from concave_hull import concave_hull as concave_hull_lib
+from scipy.spatial import ConvexHull, Delaunay
+import numpy as np
 
 
 # Distance between stop line and pedestrian crossing
@@ -579,28 +582,130 @@ class Opendrive2Apollo(Convertor):
 
     return len(connecting_roads) != 1 and len(incoming_roads) != 1
 
-  def construct_junction_polygon(self, xodr_junction):
+  def construct_junction_polygon(self, xodr_junction, type="box"):
     if not self._is_valid_junction(xodr_junction):
       return []
 
     points = []
-    # TODO:: junction boundry
-    for road, relation in xodr_junction.connected_roads:
-      # start, end = road.get_cross_section(relation)
-      left_boundry, right_bondry = road.get_cross_section_boundry(relation)
-      points.append([start.x, start.y])
-      points.append([end.x, end.y])
+    # TODO:: junction boundry 
+    if type == "box":
+      for road, relation in xodr_junction.connected_roads:
+          start, end = road.get_cross_section(relation)
+          points.append([start.x, start.y])
+          points.append([end.x, end.y])
 
-    # when point <= 4 convex_hull will not fully covered, so we change to aabb_box
-    if len(points) <= 4:
-      return aabb_box(points)
-    else:
-      return convex_hull(points)
+          # when point <= 4 convex_hull will not fully covered, so we change to aabb_box
+          if len(points) <= 4:
+            return aabb_box(points)
+          else:
+            return convex_hull(points)
+    
+    elif type == "boundry":  
+      left_incomroadlist = []  
+      right_incomroadlist = []  
+ 
+      boundary_point_temp=[]
+      for junction_connecting_lane in xodr_junction.connections:  
+        # connecting_road 
+        for lanesection_ in self.xodr_map.roads[junction_connecting_lane.connecting_road].lanes.lane_sections: 
+          junction_id = self.xodr_map.roads[junction_connecting_lane.connecting_road].junction_id 
+          if junction_id == "-1":
+            continue 
+          link_name = self.xodr_map.roads[junction_connecting_lane.connecting_road].link
+          print("junction_id: ", junction_id)
+          print("pre: {} sub: {}".format(link_name.predecessor.contact_point, link_name.successor.contact_point))          
+          incomRoadID = junction_connecting_lane.connecting_road #incoming_road
+          left_boundary_points = []
+          right_boundary_points = []  
+          # if link_name.predecessor.contact_point !="end" and link_name.successor.contact_point !="start":
+          #   continue
+          
+          for lanesectionright in lanesection_.right: # -            
+            if  lanesectionright.lane_type != "driving" and lanesectionright.lane_type != "shoulder": 
+              print("laneleft.lane_id.right: ", lanesectionright.lane_id)
+              print("laneleft.type: ", lanesectionright.lane_type)
+              if incomRoadID in right_incomroadlist:
+                break
+              right_incomroadlist.append(incomRoadID) 
+              if len(lanesection_.right)>0 and len(lanesection_.left)>0:   
+                for points in lanesectionright.right_boundary:              
+                      right_boundary_points.append([points.x, points.y])  
+              else:
+                for points in lanesectionright.right_boundary:              
+                      right_boundary_points.append([points.x, points.y])          
+                     
+                             
+          for lanesectionleft in lanesection_.left: # + 
+            if lanesectionleft.lane_type != "driving" and lanesectionleft.lane_type != "shoulder":
+              print("laneleft.lane_id.left: ", lanesectionleft.lane_id)
+              print("laneleft.type: ", lanesectionleft.lane_type)  
+              if incomRoadID in left_incomroadlist:
+                break
+              left_incomroadlist.append(incomRoadID)
+              if len(lanesection_.right)>0 and len(lanesection_.left)>0:                
+                for points in lanesectionleft.left_boundary:                           
+                    left_boundary_points.append([points.x, points.y])
+              else:
+                for points in lanesectionleft.left_boundary:                           
+                    left_boundary_points.append([points.x, points.y])
+          
+          if len(right_boundary_points)>3:
+            boundary_point_temp.append([right_boundary_points, link_name, "right"])
+          elif len(left_boundary_points)>3:  
+            boundary_point_temp.append([left_boundary_points, link_name, "left"])
 
+      if len(boundary_point_temp)==3:
+        for i in range(0,len(boundary_point_temp)):
+          point_list_temp,link_name_temp, side = boundary_point_temp[i]
+          if side == "left":
+            if link_name_temp.successor.contact_point == "start" and link_name_temp.predecessor.contact_point == "end":
+              boundary_point_temp[i][0]=point_list_temp[::-1]
+            else:
+              boundary_point_temp[i][0]=point_list_temp
+          # else:
+          #   if link_name_temp.successor.contact_point == "start" and link_name_temp.predecessor.contact_point == "end":
+          #     boundary_point_temp[i][0]=point_list_temp[::-1]
+          #   else:
+          #     boundary_point_temp[i][0]=point_list_temp
+
+      boundary_points = []  
+      point_list_ = []    
+      # for point_list,link_name_ in boundary_point_temp:
+      if len(boundary_point_temp) == 3:
+        point_list_ = boundary_point_temp[0][0]
+        for i in range(1,3):
+          if boundary_point_temp[0][1].successor.element_id == boundary_point_temp[i][1].predecessor.element_id:
+            point_list_.extend(boundary_point_temp[i][0])
+            point_list_.extend(boundary_point_temp[3-i][0])
+            break
+        boundary_points = point_list_
+      elif len(boundary_point_temp) == 4:        
+        for i in range(0,3):          
+          for j in range (i+1, 4):
+            if boundary_point_temp[i][1].successor.element_id == boundary_point_temp[j][1].predecessor.element_id:
+              temp_point_ = boundary_point_temp[i+1][0]
+              temp_name_ = boundary_point_temp[i+1][1]
+              boundary_point_temp[i+1][0] = boundary_point_temp[j][0]
+              boundary_point_temp[j][0] = temp_point_
+
+              boundary_point_temp[i+1][1] = boundary_point_temp[j][1]
+              boundary_point_temp[j][1] = temp_name_
+          boundary_points.extend(boundary_point_temp[i][0])
+        boundary_points.extend(boundary_point_temp[3][0])
+      else:
+        for points, _, _ in boundary_point_temp:
+          boundary_points.extend(points)
+      
+      hull = ConvexHull(np.array(boundary_points))
+
+
+      # return boundary_points
+      return concave_hull_lib(boundary_points, length_threshold=0, concavity=5, convex_hull_indexes=hull.vertices)
+      
 
   def convert_junctions(self):
     for _, xodr_junction in self.xodr_map.junctions.items():
-      polygon = self.construct_junction_polygon(xodr_junction)
+      polygon = self.construct_junction_polygon(xodr_junction, "boundry")
       if len(polygon) < 3:
         logging.warning(
           "junction {} polygon size < 3.".format(xodr_junction.junction_id))

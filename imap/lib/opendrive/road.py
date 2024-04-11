@@ -199,4 +199,5 @@ class Road:
   
   def get_cross_section_boundry(self, relation):
     #TODO:: junction boundry
-    return self.lanes.get_cross_section(relation)
+    # <junction.connectingRoad.id -> road.<planView>.geometry.提取
+    return self.lanes.get_cross_section_points(relation)
