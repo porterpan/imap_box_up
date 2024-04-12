@@ -34,7 +34,7 @@ from imap.lib.draw import draw_line, show
 from imap.lib.convex_hull import convex_hull, aabb_box
 from imap.lib.proj_helper import latlon2utm
 from concave_hull import concave_hull as concave_hull_lib
-from scipy.spatial import ConvexHull, Delaunay
+from scipy.spatial import ConvexHull as ConvexHull_lib
 import numpy as np
 
 
@@ -590,17 +590,19 @@ class Opendrive2Apollo(Convertor):
     # TODO:: junction boundry 
     if type == "box":
       for road, relation in xodr_junction.connected_roads:
-          start, end = road.get_cross_section(relation)
+        cross_section = road.get_cross_section(relation)
+        if cross_section:
+          start, end = cross_section
           points.append([start.x, start.y])
           points.append([end.x, end.y])
 
           # when point <= 4 convex_hull will not fully covered, so we change to aabb_box
-          if len(points) <= 4:
-            return aabb_box(points)
-          else:
-            return convex_hull(points)
+      if len(points) <= 4:
+        return aabb_box(points)
+      else:
+        return convex_hull(points)
     
-    elif type == "boundry":  
+    elif type == "boundry": 
       left_incomroadlist = []  
       right_incomroadlist = []  
  
@@ -612,18 +614,16 @@ class Opendrive2Apollo(Convertor):
           if junction_id == "-1":
             continue 
           link_name = self.xodr_map.roads[junction_connecting_lane.connecting_road].link
-          print("junction_id: ", junction_id)
-          print("pre: {} sub: {}".format(link_name.predecessor.contact_point, link_name.successor.contact_point))          
+          # print("junction_id: ", junction_id)
+          # print("pre: {} sub: {}".format(link_name.predecessor.contact_point, link_name.successor.contact_point))          
           incomRoadID = junction_connecting_lane.connecting_road #incoming_road
           left_boundary_points = []
           right_boundary_points = []  
-          # if link_name.predecessor.contact_point !="end" and link_name.successor.contact_point !="start":
-          #   continue
           
           for lanesectionright in lanesection_.right: # -            
             if  lanesectionright.lane_type != "driving" and lanesectionright.lane_type != "shoulder": 
-              print("laneleft.lane_id.right: ", lanesectionright.lane_id)
-              print("laneleft.type: ", lanesectionright.lane_type)
+              # print("laneleft.lane_id.right: ", lanesectionright.lane_id)
+              # print("laneleft.type: ", lanesectionright.lane_type)
               if incomRoadID in right_incomroadlist:
                 break
               right_incomroadlist.append(incomRoadID) 
@@ -637,8 +637,8 @@ class Opendrive2Apollo(Convertor):
                              
           for lanesectionleft in lanesection_.left: # + 
             if lanesectionleft.lane_type != "driving" and lanesectionleft.lane_type != "shoulder":
-              print("laneleft.lane_id.left: ", lanesectionleft.lane_id)
-              print("laneleft.type: ", lanesectionleft.lane_type)  
+              # print("laneleft.lane_id.left: ", lanesectionleft.lane_id)
+              # print("laneleft.type: ", lanesectionleft.lane_type)  
               if incomRoadID in left_incomroadlist:
                 break
               left_incomroadlist.append(incomRoadID)
@@ -696,12 +696,14 @@ class Opendrive2Apollo(Convertor):
         for points, _, _ in boundary_point_temp:
           boundary_points.extend(points)
       
-      hull = ConvexHull(np.array(boundary_points))
+      hull = ConvexHull_lib(np.array(boundary_points))
 
 
       # return boundary_points
       return concave_hull_lib(boundary_points, length_threshold=0, concavity=5, convex_hull_indexes=hull.vertices)
-      
+    else:
+      print("---------------------convert method error---------------------")
+      return   
 
   def convert_junctions(self, method="boundry"):
     for _, xodr_junction in self.xodr_map.junctions.items():
@@ -717,11 +719,14 @@ class Opendrive2Apollo(Convertor):
         pb_point = pb_junction.polygon.point.add()
         pb_point.x, pb_point.y, pb_point.z = x, y, 0
 
-  def convert(self, relative=False):
+  def convert(self, relative=False, junctionbox=False):
     self.convert_header(relative)
     # Don't change the order. "convert_roads" must before "convert_junctions"
     self.convert_roads()
-    self.convert_junctions(method="boundry")
+    if junctionbox == False:      
+      self.convert_junctions(method="boundry")
+    else:      
+      self.convert_junctions(method="box")
 
     # Todo(zero): display xodr map
     if self.output_file_name is None:

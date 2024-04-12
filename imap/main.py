@@ -27,11 +27,11 @@ from imap.lib.draw import add_editor, show_map
 from imap.lib.convertor import Opendrive2Apollo
 
 
-def convert_map_format(input_path, output_path, relative):
+def convert_map_format(input_path, output_path, relative, junctionbox=False):
     opendrive2apollo = Opendrive2Apollo(input_path, output_path)
     # todo(zero): only lane type is driving add relationship!!!
     opendrive2apollo.set_parameters(only_driving=False)
-    opendrive2apollo.convert(relative)
+    opendrive2apollo.convert(relative, junctionbox)
     opendrive2apollo.save_map()
 
 
@@ -44,13 +44,14 @@ def show_open_drive_map(map_file):
 def main(args=sys.argv):
     parser = argparse.ArgumentParser(
         description="Imap is a tool to display hdmap info on a map.",
-        prog="main.py",
+        prog="imap_box_up",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='eg:\n \
-    1.show appollo map by id: imap -m data/borregas_ave.txt -l lane_35 \n \
-    2.Format conversion with UTM map(opendrive->appollo): imap -f -i data/town.xodr -o data/apollo_map.txt \n \
-    3.Format conversion with relative map(opendrive->appollo.relative map): imap -f -r -i data/town.xodr -o data/apollo_map.txt \n \
-    Notice:\
+    1.show appollo map by id: imap_box_up -m data/borregas_ave.txt -l lane_35 \n \
+    2.Format conversion with UTM map(opendrive->appollo): imap_box_up -f -i data/town.xodr -o data/apollo_map.txt \n \
+    3.Format conversion with relative map(opendrive->appollo.relative map, recommend): imap_box_up -f -r -i data/town.xodr -o data/apollo_map.txt \n \
+    4.if you want convert map junction with box(not recommend): imap_box_up -f -r -b -i data/town.xodr -o data/apollo_map.txt \n \
+    Notice:\n \
     1.After running the command imap -m data/your_map_file, nothing display and no errors!!! \n \
         step1:Check the permissions: sudo chmod 777 data/your_map_file \n \
     if step1 no solve the problem, you can try sudo pip install xxx again. \n \
@@ -89,7 +90,9 @@ def main(args=sys.argv):
     parser.add_argument(
         "-r", "--relative", action="store", type=bool, required=False,
         nargs='?', default=False, help="convert opendrive map to appollo map without GIS projection")
-
+    parser.add_argument(
+        "-b", "--box", action="store", type=bool, required=False,
+        nargs='?', default=False, help="convert opendrive map to appollo map junction with box(not recommend)")
     args = parser.parse_args(args[1:])
 
     # 1. Init global var
@@ -120,7 +123,7 @@ def main(args=sys.argv):
         if not map_file.is_file():
             logging.error("File not exist! '{}'".format(args.input))
             return
-        convert_map_format(args.input, args.output, args.relative)
+        convert_map_format(args.input, args.output, args.relative, args.box)
 
 if __name__ == '__main__':
   main(args=sys.argv)

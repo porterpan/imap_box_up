@@ -469,10 +469,10 @@ class Lanes:
   def get_cross_section_points(self, relation):
     # qian
     if relation == "predecessor":
-      return self.lane_sections[0].get_cross_section_points_("start")
+      return self.lane_sections[0].get_cross_section("start")
     # hou
     elif relation == "successor":
-      return self.lane_sections[-1].get_cross_section_points_("end")
+      return self.lane_sections[-1].get_cross_section("end")
     else:
       print("Unknown relation!")
       return []
