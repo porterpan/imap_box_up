@@ -703,9 +703,9 @@ class Opendrive2Apollo(Convertor):
       return concave_hull_lib(boundary_points, length_threshold=0, concavity=5, convex_hull_indexes=hull.vertices)
       
 
-  def convert_junctions(self):
+  def convert_junctions(self, method="boundry"):
     for _, xodr_junction in self.xodr_map.junctions.items():
-      polygon = self.construct_junction_polygon(xodr_junction, "boundry")
+      polygon = self.construct_junction_polygon(xodr_junction, method)
       if len(polygon) < 3:
         logging.warning(
           "junction {} polygon size < 3.".format(xodr_junction.junction_id))
@@ -721,7 +721,7 @@ class Opendrive2Apollo(Convertor):
     self.convert_header(relative)
     # Don't change the order. "convert_roads" must before "convert_junctions"
     self.convert_roads()
-    self.convert_junctions()
+    self.convert_junctions(method="boundry")
 
     # Todo(zero): display xodr map
     if self.output_file_name is None:
