@@ -1,4 +1,4 @@
-# imap
+# imap_box_up
 
 [![Documentation Status](https://readthedocs.org/projects/imap/badge/?version=latest)](https://imap.readthedocs.io/en/latest/?badge=latest)
 
@@ -20,13 +20,10 @@ The project is Modify on project of [https://github.com/daohu527/imap](https://g
 
 ![valid junction](https://img2.imgtp.com/2024/04/12/aHEcAl7a.png)
 
-![junction detail](https://img2.imgtp.com/2024/04/12/Ct9V2l51.png)
 
 ## the old tool bug
 
 ![invalid junction](https://img2.imgtp.com/2024/04/12/hOWOvqyr.jpg)
-
-![junction error](https://imap.readthedocs.io/en/latest/_images/map_show.jpg)
 
 
 **Supported features**:
@@ -84,6 +81,25 @@ imap_box_up -f -i data/town.xodr -o data/apollo_map.txt
 ```shell
 imap_box_up -f -r -i data/town.xodr -o data/apollo_map.txt
 ```
+
+#### 4. junction display Format
+
+junction display with road shape
+
+```shell
+imap_box_up -f -r -i data/town.xodr -o data/apollo_map.txt
+```
+
+![junction detail](https://img2.imgtp.com/2024/04/12/Ct9V2l51.png)
+
+junction display with box shape
+
+```shell
+imap_box_up -f -r -b -i data/town.xodr -o data/apollo_map.txt
+```
+
+![junction error](https://imap.readthedocs.io/en/latest/_images/map_show.jpg)
+
 
 
 The following is the display of the hd-map in `data\borregas_ave.txt`.You can click on the lane you want to display more detail info, which will display the current lane's id, as well as the predecessor and successor lane's id in the upper left corner.
