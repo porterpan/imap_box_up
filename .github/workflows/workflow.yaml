@@ -28,12 +28,12 @@ jobs:
 
     steps:
     # 此步骤使用 GitHub 的 https://github.com/actions/checkout
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v3
     
     # 设置python环境
     # 此步骤使用 GitHub 的 https://github.com/actions/setup-python
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v3
       with:
         python-version: '3.x'
     
@@ -51,4 +51,6 @@ jobs:
         TWINE_PASSWORD: ${{ secrets.PYPI_PASSWORD }}
       run: |
         python setup.py sdist bdist_wheel
+        echo "My secret is ${{ secrets.PYPI_USERNAME }}"
+        twine check dist/*
         twine upload dist/*
