@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="imap_box_up",
-    version="0.0.3",
+    version="0.0.4",
     author="porter",
     author_email="porter.pan@outlook.com",
     description="High-resolution map visualization and conversion tool, opendrive hdmap convert to appollo base map!",
