@@ -2,7 +2,7 @@
 
 [![Documentation Status](https://readthedocs.org/projects/imap/badge/?version=latest)](https://imap.readthedocs.io/en/latest/?badge=latest)
 
-**[imap_box_up](https://imap.readthedocs.io/en/latest/)** is a tool for visualize and convert format of the hd-map. This project was inspired by Apollo, modified by [imap](https://github.com/daohu527/imap), the imap tool is very useful. 
+**[imap_box_up](https://imap.readthedocs.io/en/latest/)** is a tool for visualize and convert format of the hd-map. This project was inspired by Apollo, modified by [imap](https://github.com/daohu527/imap/releases/tag/v0.1.7), the imap tool is very useful. 
 
 The name of **imap_box_up** , Just to modified from imap_box
 
@@ -12,19 +12,16 @@ imap_box_up source code: [https://github.com/porterpan/imap_box_up](https://gith
 
 **Note:**
 
-The project is Modify on project of [https://github.com/daohu527/imap](https://github.com/daohu527/imap)
+- the map road lane attribution should have curb, if not have curb, task will random selection shouler, stop, walking to create apoolo map.
+
+- The project is Modify on project of [https://github.com/daohu527/imap](https://github.com/daohu527/imap)
 
 > I found that imap_box had the problem of inaccurate junction drawing, which could not meet the needs of my project. Therefore, I modified imap_box based on it to adapt to appollo hdmap code. 
 
-## now(fix junction bug)
+
+## fix junction bug
 
 ![valid junction](https://img2.imgtp.com/2024/04/12/aHEcAl7a.png)
-
-
-## the old tool bug
-
-![invalid junction](https://img2.imgtp.com/2024/04/12/hOWOvqyr.jpg)
-
 
 **Supported features**:
 1. Visualize the hd-map, supported formats: Apollo, OpenDrive.

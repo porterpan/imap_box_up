@@ -89,10 +89,10 @@ def main(args=sys.argv):
         nargs='?', const=True, default=False, help="debug mode")
     parser.add_argument(
         "-r", "--relative", action="store", type=bool, required=False,
-        nargs='?', default=False, help="convert opendrive map to appollo map without GIS projection")
+        nargs='?', const=True, default=False, help="convert opendrive map to appollo map without GIS projection")
     parser.add_argument(
         "-b", "--box", action="store", type=bool, required=False,
-        nargs='?', default=False, help="convert opendrive map to appollo map junction with box(not recommend)")
+        nargs='?', const=True, default=False, help="convert opendrive map to appollo map junction with box(not recommend)")
     args = parser.parse_args(args[1:])
 
     # 1. Init global var

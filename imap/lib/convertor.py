@@ -620,34 +620,86 @@ class Opendrive2Apollo(Convertor):
           left_boundary_points = []
           right_boundary_points = []  
           
+          have_right_curb = False           
+          for lanesectionright in lanesection_.right:
+              for roadmark in lanesectionright.road_marks:
+                if roadmark.roadmark_type == "curb":
+                  have_right_curb = True
+
           for lanesectionright in lanesection_.right: # -            
-            if  lanesectionright.lane_type != "driving" and lanesectionright.lane_type != "shoulder": 
+            if have_right_curb==True:
+              record_right = False
+              for roadmark in lanesectionright.road_marks:
+                if roadmark.roadmark_type == "curb":
+                  record_right = True
+              if record_right == True:   
+                if incomRoadID in right_incomroadlist:
+                  break
+                right_incomroadlist.append(incomRoadID) 
+                # if len(lanesection_.right)>0 and len(lanesection_.left)>0: 
+                if len(lanesectionright.right_boundary) >0:   
+                  print("__curbe__") 
+                  for points in lanesectionright.right_boundary:              
+                      right_boundary_points.append([points.x, points.y])  
+                # else:
+                #   for points in lanesectionright.right_boundary:              
+                #         right_boundary_points.append([points.x, points.y])   
+                    
+            elif  lanesectionright.lane_type != "driving":# and lanesectionright.lane_type != "shoulder": 
               # print("laneleft.lane_id.right: ", lanesectionright.lane_id)
               # print("laneleft.type: ", lanesectionright.lane_type)
               if incomRoadID in right_incomroadlist:
                 break
               right_incomroadlist.append(incomRoadID) 
-              if len(lanesection_.right)>0 and len(lanesection_.left)>0:   
+              # if len(lanesection_.right)>0 and len(lanesection_.left)>0:  
+              if len(lanesectionright.right_boundary) >0: 
+                print("__tyep__:", lanesectionright.lane_type) 
                 for points in lanesectionright.right_boundary:              
-                      right_boundary_points.append([points.x, points.y])  
-              else:
-                for points in lanesectionright.right_boundary:              
-                      right_boundary_points.append([points.x, points.y])          
-                     
-                             
+                    right_boundary_points.append([points.x, points.y])  
+              # else:
+              #   for points in lanesectionright.right_boundary:              
+              #         right_boundary_points.append([points.x, points.y])          
+
+          # if lanesectionleft.road_marks[0].roadmark_type == "curb":
+          have_left_curb = False           
+          for lanesectionleft in lanesection_.left:
+              for roadmark in lanesectionleft.road_marks:
+                if roadmark.roadmark_type == "curb":
+                  have_left_curb = True
+
           for lanesectionleft in lanesection_.left: # + 
-            if lanesectionleft.lane_type != "driving" and lanesectionleft.lane_type != "shoulder":
+            # if lanesectionleft.road_marks[0].roadmark_type == "curb":
+            if have_left_curb==True:
+              record = False
+              for roadmark in lanesectionleft.road_marks:
+                if roadmark.roadmark_type == "curb":
+                  record = True
+              if record == True:   
+                if incomRoadID in left_incomroadlist:
+                  break
+                left_incomroadlist.append(incomRoadID)
+                # if len(lanesection_.right)>0 and len(lanesection_.left)>0:   
+                if len(lanesectionleft.left_boundary) >0:  
+                  print("__curbe__")           
+                  for points in lanesectionleft.left_boundary:                           
+                    left_boundary_points.append([points.x, points.y])
+                # else:
+                #   for points in lanesectionleft.left_boundary:                           
+                #       left_boundary_points.append([points.x, points.y])
+            elif lanesectionleft.lane_type != "driving": # and lanesectionleft.lane_type != "shoulder":
               # print("laneleft.lane_id.left: ", lanesectionleft.lane_id)
               # print("laneleft.type: ", lanesectionleft.lane_type)  
               if incomRoadID in left_incomroadlist:
                 break
               left_incomroadlist.append(incomRoadID)
-              if len(lanesection_.right)>0 and len(lanesection_.left)>0:                
+              # if len(lanesection_.right)>0 and len(lanesection_.left)>0:    
+              if len(lanesectionleft.left_boundary) >0:       
+                print("__tyep__:", lanesectionleft.lane_type)      
                 for points in lanesectionleft.left_boundary:                           
-                    left_boundary_points.append([points.x, points.y])
-              else:
-                for points in lanesectionleft.left_boundary:                           
-                    left_boundary_points.append([points.x, points.y])
+                  left_boundary_points.append([points.x, points.y])
+              # else:
+              #   for points in lanesectionleft.left_boundary:                           
+              #       left_boundary_points.append([points.x, points.y])
           
           if len(right_boundary_points)>3:
             boundary_point_temp.append([right_boundary_points, link_name, "right"])
