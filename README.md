@@ -4,44 +4,39 @@
 
 **[imap_box_up](https://imap.readthedocs.io/en/latest/)** is a tool for visualize and convert format of the hd-map. This project was inspired by Apollo, modified by [imap](https://github.com/daohu527/imap/releases/tag/v0.1.7), the imap tool is very useful. 
 
-The name of **imap_box_up** , Just to modified from imap_box
-
-The modified tool is named **imap_box_up** just to distinguish it from **imap_box**
+The name of **imap_box_up** , Just to modified from imap_box and just to distinguish it from **imap_box**
 
 imap_box_up source code: [https://github.com/porterpan/imap_box_up](https://github.com/porterpan/imap_box_up)
 
 **Note:**
 
-- the map road lane attribution should have curb, if not have curb, task will random selection shouler, stop, walking to create apoolo map.
+- the map road lane attribution should have curb, if not have curb, task will random selection shouler ~~, stop, walking to create apoolo map.~~
 
 - The project is Modify on project of [https://github.com/daohu527/imap](https://github.com/daohu527/imap)
 
-> I found that imap_box had the problem of inaccurate junction drawing, which could not meet the needs of my project. Therefore, I modified imap_box based on it to adapt to appollo hdmap code. 
+> I found that imap_box had the problem of inaccurate junction drawing, which could not meet the needs of my project. Therefore, I modified imap_box based on it to adapt to my appollo hdmap code for perception work. 
 
 
-## fix junction bug
+## 新特性1（junction apollo map 显示使用 curbe or shoulder道路属性进行显示，可以实现弧形的显示，而不是原先的box显示junction hd map)
+
+该功能使用默认参数将生成沿着curb或者shoulder绘制的路口地图
 
 ![valid junction](https://img2.imgtp.com/2024/04/12/aHEcAl7a.png)
 
-**Supported features**:
-1. Visualize the hd-map, supported formats: Apollo, OpenDrive.
-2. Find lane by id
-3. Convert format: Opendrive to Apollo format.
+如果你要使用原先的box形状显示路口，可以使用参数 -b 即可生成box形状的路口。
 
-| os      | support                 | remark |
-|---------|-------------------------|--------|
-| ubuntu  | :heavy_check_mark:      |        |
-| mac     | :heavy_check_mark:      |        |
-| windows | :heavy_check_mark:      |        |
+## new 2 （添加新的参数-r 以转换为不带有地理坐标的地图数据)
 
-## Related work
-- [odrviewer.io](https://odrviewer.io/) is an excellent interactive online OpenDRIVE viewer.
-- [esmini](https://github.com/esmini/esmini) is a basic OpenSCENARIO player.
-- [apollo_map](https://github.com/Flycars/apollo_map) convert carla map to apollo
+## 地图绘制说明
+
+绘制路口时，确保路口存在curb或者shoulder元素，因为默认非box的junction路口apollo hdmap 需要有这两种元素中的一种或者两种才能正常生成，否则转换后的apollo hdmap 将丢失junction 元素。检查是否有curb属性如下图
+
+![](roadmap_have_junction_or_shoulder.png)
 
 ## Quick start
 
 #### Install
+
 You can install imap by following cmd.
 ```shell
 pip3 install imap_box_up
@@ -115,3 +110,20 @@ sudo chmod 777 data/your_map_file
 A: It's better to install imap_box by running "sudo pip3 install imap_box", then run "imap -m xxx.txt".
 
 > If you have any questions, please feel free to contact me.
+
+
+**Supported features**:
+1. Visualize the hd-map, supported formats: Apollo, OpenDrive.
+2. Find lane by id
+3. Convert format: Opendrive to Apollo format.
+
+| os      | support                 | remark |
+|---------|-------------------------|--------|
+| ubuntu  | :heavy_check_mark:      |        |
+| mac     | :heavy_check_mark:      |        |
+| windows | :heavy_check_mark:      |        |
+
+## Related work
+- [odrviewer.io](https://odrviewer.io/) is an excellent interactive online OpenDRIVE viewer.
+- [esmini](https://github.com/esmini/esmini) is a basic OpenSCENARIO player.
+- [apollo_map](https://github.com/Flycars/apollo_map) convert carla map to apollo

@@ -25,14 +25,18 @@
       "type": "debugpy",
       "request": "launch",
       "program": "${file}",
+      // "args": [
+      //   "-m",        
+      //   "D:\\WORKSPACE\\roadrunner\\scence1\\Exports\\abcdefg.xodr"
+      // ]
       "args": [
         "-f",
         "-r",
         // "-b",
         "-i",
-        "D:\\WORKSPACE\\roadrunner\\scence1\\Exports\\zhenhua1.7.xodr",
+        "D:\\WORKSPACE\\roadrunner\\scence1\\Exports\\gzzhenhuav4.xodr",
         "-o",
-        "D:\\WORKSPACE\\roadrunner\\scence1\\Exports\\zhenhua_test.txt"
+        "D:\\WORKSPACE\\roadrunner\\scence1\\Exports\\gzzhenhuav4.txt"
       ]
     }
   ]
