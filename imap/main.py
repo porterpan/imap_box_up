@@ -49,14 +49,13 @@ def main(args=sys.argv):
         epilog='eg:\n \
     1.show appollo map by id: imap_box_up -m data/borregas_ave.txt -l lane_35 \n \
     2.Format conversion with UTM map(opendrive->appollo): imap_box_up -f -i data/town.xodr -o data/apollo_map.txt \n \
-    3.Format conversion with relative map(opendrive->appollo.relative map, recommend): imap_box_up -f -r -i data/town.xodr -o data/apollo_map.txt \n \
-    4.if you want convert map junction with box(not recommend): imap_box_up -f -r -b -i data/town.xodr -o data/apollo_map.txt \n \
-    Notice:\n \
+    3.if you want convert map junction with box: imap_box_up -f -r -b -i data/town.xodr -o data/apollo_map.txt \n \
+    4.Format conversion with relative map(opendrive->appollo.relative map): \n \
+    \t \t imap_box_up -f -r -i data/town.xodr -o data/apollo_map.txt \n \
+    \nNotice:\n \
     1.After running the command imap -m data/your_map_file, nothing display and no errors!!! \n \
         step1:Check the permissions: sudo chmod 777 data/your_map_file \n \
-    if step1 no solve the problem, you can try sudo pip install xxx again. \n \
-    2.Other Problem you can contact porter.pan@outlook.com \n \
-    3.code modified from: https://github.com/daohu527/imap '
+    2.Make sure you junction section have curb or shoulder type when not use -b.'
         )
 
     parser.add_argument(
