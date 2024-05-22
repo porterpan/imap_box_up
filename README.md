@@ -10,14 +10,14 @@ imap_box_up source code: [https://github.com/porterpan/imap_box_up](https://gith
 
 **Note:**
 
-- the map road lane attribution should have curb, if not have curb, task will random selection shouler ~~, stop, walking to create apoolo map.~~
+- the map road lane attribution should have one of curb、shoulder.  ~~if not have curb, task will random selection shouler , stop, walking to create apoolo map.~~
 
 - The project is Modify on project of [https://github.com/daohu527/imap](https://github.com/daohu527/imap)
 
 > I found that imap_box had the problem of inaccurate junction drawing, which could not meet the needs of my project. Therefore, I modified imap_box based on it to adapt to my appollo hdmap code for perception work. 
 
 
-## 新特性1（junction apollo map 显示使用 curbe or shoulder道路属性进行显示，可以实现弧形的显示，而不是原先的box显示junction hd map)
+## new1（junction apollo map 显示使用 curbe or shoulder道路属性进行显示，可以实现弧形的显示，而不是原先的box显示junction hd map)
 
 该功能使用默认参数将生成沿着curb或者shoulder绘制的路口地图
 
@@ -31,7 +31,7 @@ imap_box_up source code: [https://github.com/porterpan/imap_box_up](https://gith
 
 绘制路口时，确保路口存在curb或者shoulder元素，因为默认非box的junction路口apollo hdmap 需要有这两种元素中的一种或者两种才能正常生成，否则转换后的apollo hdmap 将丢失junction 元素。检查是否有curb属性如下图
 
-![](roadmap_have_junction_or_shoulder.png)
+![roadrunner 绘制地图注意](https://raw.githubusercontent.com/porterpan/imap_box_up/master/roadmap_have_junction_or_shoulder.png)
 
 ## Quick start
 
